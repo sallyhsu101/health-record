@@ -1,0 +1,3135 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+
+<meta name="viewport"
+content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover">
+
+<meta name="theme-color" content="#2563eb">
+
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="健康紀錄">
+
+<link rel="manifest" href="manifest.webmanifest">
+
+<title>每日健康紀錄</title>
+
+<style>
+:root{
+  --blue:#2563eb;
+  --blue-light:#eff6ff;
+  --green:#16a34a;
+  --green-light:#dcfce7;
+  --orange:#ea580c;
+  --orange-light:#ffedd5;
+  --cyan:#0891b2;
+  --cyan-light:#cffafe;
+  --red:#dc2626;
+  --purple:#7c3aed;
+  --bg:#f5f7fb;
+  --card:#fff;
+  --text:#172033;
+  --muted:#64748b;
+  --line:#e5e7eb;
+  --safe-top:env(safe-area-inset-top);
+  --safe-bottom:env(safe-area-inset-bottom);
+}
+
+*{
+  box-sizing:border-box;
+  -webkit-tap-highlight-color:transparent;
+}
+
+html,body{
+  margin:0;
+  padding:0;
+  background:var(--bg);
+  color:var(--text);
+  font-family:
+    -apple-system,
+    BlinkMacSystemFont,
+    "SF Pro Text",
+    "PingFang TC",
+    "Noto Sans TC",
+    sans-serif;
+}
+
+body{
+  min-height:100svh;
+  overscroll-behavior:none;
+}
+
+button,input{
+  font:inherit;
+}
+
+button{
+  -webkit-appearance:none;
+  appearance:none;
+}
+
+.app{
+  max-width:680px;
+  min-height:100svh;
+  margin:auto;
+}
+
+.header{
+  position:sticky;
+  top:0;
+  z-index:50;
+  padding:
+    calc(12px + var(--safe-top))
+    16px
+    13px;
+  background:rgba(255,255,255,.95);
+  backdrop-filter:blur(18px);
+  -webkit-backdrop-filter:blur(18px);
+  border-bottom:1px solid rgba(229,231,235,.8);
+}
+
+.header-row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+}
+
+.app-title{
+  font-size:22px;
+  font-weight:850;
+}
+
+.date-label{
+  color:var(--muted);
+  font-size:13px;
+  margin-top:3px;
+}
+
+.logo{
+  width:43px;
+  height:43px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:var(--blue-light);
+  border-radius:14px;
+  font-size:22px;
+}
+
+main{
+  padding:
+    14px
+    14px
+    calc(105px + var(--safe-bottom));
+}
+
+.page{
+  display:none;
+}
+
+.page.active{
+  display:block;
+}
+
+.date-selector{
+  display:flex;
+  gap:8px;
+  margin-bottom:14px;
+}
+
+.date-arrow{
+  width:44px;
+  height:44px;
+  flex:0 0 44px;
+  border:0;
+  border-radius:14px;
+  background:#fff;
+  color:var(--blue);
+  font-size:25px;
+  font-weight:800;
+  box-shadow:0 3px 12px rgba(15,23,42,.06);
+}
+
+.date-input{
+  flex:1;
+  min-width:0;
+  height:44px;
+  border:1px solid var(--line);
+  border-radius:14px;
+  background:#fff;
+  padding:0 12px;
+  color:var(--text);
+  font-size:16px;
+}
+
+.card{
+  background:#fff;
+  border-radius:20px;
+  padding:17px;
+  margin-bottom:13px;
+  box-shadow:0 3px 14px rgba(15,23,42,.055);
+}
+
+.card-title{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  margin-bottom:14px;
+}
+
+.card-title-left{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  font-size:18px;
+  font-weight:850;
+}
+
+.icon{
+  font-size:23px;
+}
+
+.add-btn{
+  min-height:40px;
+  border:0;
+  border-radius:12px;
+  padding:8px 12px;
+  background:var(--blue-light);
+  color:var(--blue);
+  font-size:14px;
+  font-weight:800;
+}
+
+.add-btn:active,
+.quick-btn:active,
+.nav-btn:active,
+.primary:active{
+  transform:scale(.97);
+}
+
+.summary-grid{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:9px;
+}
+
+.summary-item{
+  min-height:76px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  background:#f8fafc;
+  border-radius:15px;
+}
+
+.summary-number{
+  font-size:21px;
+  font-weight:850;
+}
+
+.summary-label{
+  color:var(--muted);
+  font-size:12px;
+  margin-top:4px;
+}
+
+.bp-main{
+  text-align:center;
+}
+
+.bp-value{
+  color:var(--blue);
+  font-size:39px;
+  font-weight:900;
+}
+
+.bp-unit{
+  color:var(--muted);
+  font-size:13px;
+}
+
+.bp-sub{
+  text-align:center;
+  color:var(--muted);
+  font-size:13px;
+  margin-top:3px;
+}
+
+.total{
+  display:flex;
+  align-items:baseline;
+  gap:6px;
+  margin-bottom:9px;
+}
+
+.total-number{
+  font-size:36px;
+  font-weight:900;
+}
+
+.total-unit{
+  color:var(--muted);
+}
+
+.food-color{color:var(--orange)}
+.liquid-color{color:var(--cyan)}
+.urine-color{color:var(--green)}
+
+.record{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+  padding:11px 0;
+  border-top:1px solid var(--line);
+}
+
+.record-main{
+  min-width:0;
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
+.record-icon{
+  width:40px;
+  height:40px;
+  flex:0 0 40px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:13px;
+  font-size:20px;
+}
+
+.orange-bg{background:var(--orange-light)}
+.cyan-bg{background:var(--cyan-light)}
+.green-bg{background:var(--green-light)}
+
+.record-name{
+  font-weight:750;
+  overflow:hidden;
+  white-space:nowrap;
+  text-overflow:ellipsis;
+}
+
+.record-time{
+  color:var(--muted);
+  font-size:12px;
+  margin-top:3px;
+}
+
+.record-value{
+  white-space:nowrap;
+  font-weight:850;
+}
+
+.delete{
+  border:0;
+  background:transparent;
+  color:#94a3b8;
+  padding:7px;
+  font-size:17px;
+}
+
+.empty{
+  padding:13px 0;
+  text-align:center;
+  color:var(--muted);
+  font-size:14px;
+}
+
+.quick-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:8px;
+}
+
+.quick-btn{
+  min-height:50px;
+  border:0;
+  border-radius:14px;
+  background:var(--green-light);
+  color:var(--green);
+  font-weight:850;
+}
+
+.favorite-grid{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:9px;
+}
+
+.favorite-btn{
+  position:relative;
+  min-height:64px;
+  border:0;
+  border-radius:16px;
+  padding:10px 35px 10px 12px;
+  text-align:left;
+  background:#f8fafc;
+  color:var(--text);
+  font-weight:800;
+}
+
+.favorite-btn small{
+  display:block;
+  color:var(--muted);
+  margin-top:3px;
+  font-weight:600;
+}
+
+.favorite-delete{
+  position:absolute;
+  right:7px;
+  top:7px;
+  width:27px;
+  height:27px;
+  border:0;
+  border-radius:50%;
+  background:#e2e8f0;
+  color:#64748b;
+}
+
+.bottom-nav{
+  position:fixed;
+  z-index:80;
+  left:0;
+  right:0;
+  bottom:0;
+  max-width:680px;
+  margin:auto;
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  padding:
+    6px 8px
+    calc(7px + var(--safe-bottom));
+  background:rgba(255,255,255,.96);
+  backdrop-filter:blur(18px);
+  -webkit-backdrop-filter:blur(18px);
+  border-top:1px solid rgba(229,231,235,.9);
+}
+
+.nav-btn{
+  min-height:57px;
+  border:0;
+  border-radius:15px;
+  background:transparent;
+  color:#64748b;
+  font-size:11px;
+  font-weight:750;
+}
+
+.nav-btn.active{
+  color:var(--blue);
+  background:var(--blue-light);
+}
+
+.nav-icon{
+  display:block;
+  font-size:21px;
+  line-height:25px;
+}
+
+.modal{
+  position:fixed;
+  z-index:100;
+  inset:0;
+  display:none;
+  align-items:flex-end;
+  background:rgba(15,23,42,.45);
+}
+
+.modal.show{
+  display:flex;
+}
+
+.modal-box{
+  width:100%;
+  max-width:680px;
+  max-height:92svh;
+  overflow-y:auto;
+  -webkit-overflow-scrolling:touch;
+  background:#fff;
+  border-radius:26px 26px 0 0;
+  padding:
+    10px 18px
+    calc(25px + var(--safe-bottom));
+}
+
+.modal-handle{
+  width:40px;
+  height:5px;
+  margin:4px auto 18px;
+  background:#d1d5db;
+  border-radius:99px;
+}
+
+.modal-header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin-bottom:18px;
+}
+
+.modal-title{
+  font-size:22px;
+  font-weight:900;
+}
+
+.close{
+  width:40px;
+  height:40px;
+  border:0;
+  border-radius:50%;
+  background:#f1f5f9;
+}
+
+.form-group{
+  margin-bottom:15px;
+}
+
+.form-group label{
+  display:block;
+  margin-bottom:7px;
+  font-size:14px;
+  font-weight:800;
+}
+
+.form-group input{
+  width:100%;
+  height:53px;
+  border:1px solid #dbe2ea;
+  border-radius:14px;
+  background:#f8fafc;
+  padding:0 14px;
+  font-size:18px;
+  color:var(--text);
+  outline:none;
+}
+
+.form-group input:focus{
+  border-color:#93c5fd;
+  background:#fff;
+}
+
+.primary{
+  width:100%;
+  min-height:55px;
+  border:0;
+  border-radius:15px;
+  background:var(--blue);
+  color:#fff;
+  font-size:17px;
+  font-weight:900;
+}
+
+.primary.orange{background:var(--orange)}
+.primary.cyan{background:var(--cyan)}
+.primary.green{background:var(--green)}
+.primary.purple{background:var(--purple)}
+
+.secondary{
+  width:100%;
+  min-height:50px;
+  margin-top:9px;
+  border:1px solid var(--line);
+  border-radius:14px;
+  background:#fff;
+  color:var(--text);
+  font-weight:800;
+}
+
+.info-box{
+  padding:13px;
+  border-radius:14px;
+  background:#f8fafc;
+  color:var(--muted);
+  font-size:13px;
+  line-height:1.6;
+  margin-bottom:14px;
+}
+
+.chart{
+  height:190px;
+  position:relative;
+}
+
+.chart-bars{
+  position:absolute;
+  inset:8px 2px 25px;
+  display:flex;
+  align-items:flex-end;
+  justify-content:space-around;
+  gap:5px;
+}
+
+.bar-wrap{
+  position:relative;
+  height:100%;
+  flex:1;
+  display:flex;
+  align-items:flex-end;
+  justify-content:center;
+}
+
+.bar{
+  width:60%;
+  max-width:38px;
+  min-height:2px;
+  border-radius:8px 8px 3px 3px;
+}
+
+.bar-blue{
+  background:linear-gradient(#60a5fa,#2563eb);
+}
+
+.bar-cyan{
+  background:linear-gradient(#67e8f9,#0891b2);
+}
+
+.bar-value{
+  position:absolute;
+  bottom:calc(var(--height) + 5px);
+  color:var(--muted);
+  font-size:10px;
+}
+
+.bar-label{
+  position:absolute;
+  bottom:-22px;
+  color:var(--muted);
+  font-size:10px;
+}
+
+.chart-empty{
+  height:100%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:var(--muted);
+}
+
+.export-btn{
+  width:100%;
+  min-height:49px;
+  border:1px solid var(--blue);
+  border-radius:14px;
+  background:#fff;
+  color:var(--blue);
+  font-weight:850;
+}
+
+.toast{
+  position:fixed;
+  z-index:200;
+  left:50%;
+  bottom:calc(88px + var(--safe-bottom));
+  transform:translate(-50%,20px);
+  opacity:0;
+  pointer-events:none;
+  background:#111827;
+  color:#fff;
+  padding:11px 17px;
+  border-radius:13px;
+  font-size:14px;
+  white-space:nowrap;
+  transition:.25s;
+}
+
+.toast.show{
+  opacity:1;
+  transform:translate(-50%,0);
+}
+
+.file-input{
+  display:none;
+}
+
+@media(max-width:360px){
+  main{
+    padding-left:10px;
+    padding-right:10px;
+  }
+
+  .card{
+    padding:14px;
+  }
+
+  .favorite-grid{
+    grid-template-columns:1fr;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+<header class="header">
+  <div class="header-row">
+    <div>
+      <div class="app-title">每日健康紀錄</div>
+      <div class="date-label" id="headerDate"></div>
+    </div>
+    <div class="logo">❤️</div>
+  </div>
+</header>
+
+<main>
+
+<!-- ================= TODAY ================= -->
+
+<section id="pageToday" class="page active">
+
+  <div class="date-selector">
+    <button class="date-arrow" onclick="changeDate(-1)">‹</button>
+
+    <input
+      class="date-input"
+      type="date"
+      id="datePicker"
+      onchange="selectDate(this.value)">
+
+    <button class="date-arrow" onclick="changeDate(1)">›</button>
+  </div>
+
+  <!-- SUMMARY -->
+
+  <div class="card">
+    <div class="card-title">
+      <div class="card-title-left">📋 今日摘要</div>
+    </div>
+
+    <div class="summary-grid">
+
+      <div class="summary-item">
+        <div class="summary-number" id="summaryBP">--</div>
+        <div class="summary-label">最新血壓</div>
+      </div>
+
+      <div class="summary-item">
+        <div class="summary-number" id="summaryFood">0</div>
+        <div class="summary-label">進食 g</div>
+      </div>
+
+      <div class="summary-item">
+        <div class="summary-number" id="summaryLiquid">0</div>
+        <div class="summary-label">液體 mL</div>
+      </div>
+
+      <div class="summary-item">
+        <div class="summary-number" id="summaryUrine">0</div>
+        <div class="summary-label">尿量 mL</div>
+      </div>
+
+    </div>
+  </div>
+
+
+  <!-- BLOOD PRESSURE -->
+
+  <div class="card">
+
+    <div class="card-title">
+      <div class="card-title-left">
+        <span class="icon">🩸</span>
+        血壓
+      </div>
+
+      <button class="add-btn" onclick="openModal('bpModal')">
+        ＋ 新增
+      </button>
+    </div>
+
+    <div id="bpLatest"></div>
+    <div id="bpRecords"></div>
+
+  </div>
+
+
+  <!-- FAVORITE FOOD -->
+
+  <div class="card">
+
+    <div class="card-title">
+      <div class="card-title-left">
+        ⭐ 常用進食
+      </div>
+
+      <button
+        class="add-btn"
+        onclick="openFavoriteModal('food')">
+        管理
+      </button>
+    </div>
+
+    <div
+      class="favorite-grid"
+      id="foodFavorites">
+    </div>
+
+  </div>
+
+
+  <!-- FOOD -->
+
+  <div class="card">
+
+    <div class="card-title">
+      <div class="card-title-left">
+        <span class="icon">🍚</span>
+        進食
+      </div>
+
+      <button class="add-btn" onclick="openModal('foodModal')">
+        ＋ 新增
+      </button>
+    </div>
+
+    <div class="total">
+      <span class="total-number food-color" id="foodTotal">0</span>
+      <span class="total-unit">g</span>
+    </div>
+
+    <div id="foodRecords"></div>
+
+  </div>
+
+
+  <!-- FAVORITE LIQUID -->
+
+  <div class="card">
+
+    <div class="card-title">
+      <div class="card-title-left">
+        ⭐ 常用液體
+      </div>
+
+      <button
+        class="add-btn"
+        onclick="openFavoriteModal('liquid')">
+        管理
+      </button>
+    </div>
+
+    <div
+      class="favorite-grid"
+      id="liquidFavorites">
+    </div>
+
+  </div>
+
+
+  <!-- LIQUID -->
+
+  <div class="card">
+
+    <div class="card-title">
+
+      <div class="card-title-left">
+        <span class="icon">🥤</span>
+        液體攝入
+      </div>
+
+      <button
+        class="add-btn"
+        onclick="openModal('liquidModal')">
+        ＋ 新增
+      </button>
+
+    </div>
+
+    <div class="total">
+      <span
+        class="total-number liquid-color"
+        id="liquidTotal">
+        0
+      </span>
+      <span class="total-unit">mL</span>
+    </div>
+
+    <div id="liquidRecords"></div>
+
+  </div>
+
+
+  <!-- URINE -->
+
+  <div class="card">
+
+    <div class="card-title">
+
+      <div class="card-title-left">
+        <span class="icon">💧</span>
+        尿量
+      </div>
+
+      <button
+        class="add-btn"
+        onclick="openModal('urineModal')">
+        自訂
+      </button>
+
+    </div>
+
+    <div class="total">
+
+      <span
+        class="total-number urine-color"
+        id="urineTotal">
+        0
+      </span>
+
+      <span class="total-unit">
+        mL
+      </span>
+
+    </div>
+
+    <div class="quick-grid">
+
+      <button class="quick-btn" onclick="addUrine(100)">
+        +100
+      </button>
+
+      <button class="quick-btn" onclick="addUrine(200)">
+        +200
+      </button>
+
+      <button class="quick-btn" onclick="addUrine(300)">
+        +300
+      </button>
+
+    </div>
+
+    <div id="urineRecords"></div>
+
+  </div>
+
+</section>
+
+
+<!-- ================= TREND ================= -->
+
+<section id="pageTrend" class="page">
+
+  <div class="card">
+
+    <div class="card-title">
+      <div class="card-title-left">
+        💧 最近 7 天尿量
+      </div>
+    </div>
+
+    <div class="chart">
+      <div class="chart-bars" id="urineChart"></div>
+    </div>
+
+  </div>
+
+
+  <div class="card">
+
+    <div class="card-title">
+      <div class="card-title-left">
+        🥤 最近 7 天液體
+      </div>
+    </div>
+
+    <div class="chart">
+      <div class="chart-bars" id="liquidChart"></div>
+    </div>
+
+  </div>
+
+
+  <div class="card">
+
+    <div class="card-title">
+      <div class="card-title-left">
+        🍚 最近 7 天進食
+      </div>
+    </div>
+
+    <div id="foodTrend"></div>
+
+  </div>
+
+
+  <div class="card">
+
+    <div class="card-title">
+      <div class="card-title-left">
+        🩸 最近 7 天血壓
+      </div>
+    </div>
+
+    <div id="bpTrend"></div>
+
+  </div>
+
+</section>
+
+
+<!-- ================= HISTORY ================= -->
+
+<section id="pageHistory" class="page">
+
+  <div class="card">
+
+    <div class="card-title">
+      <div class="card-title-left">
+        📅 歷史紀錄
+      </div>
+    </div>
+
+    <button class="export-btn" onclick="exportCSV()">
+      📤 匯出 CSV
+    </button>
+
+    <button
+      class="secondary"
+      onclick="backupData()">
+      💾 備份全部資料
+    </button>
+
+    <button
+      class="secondary"
+      onclick="document.getElementById('restoreFile').click()">
+      📥 還原資料
+    </button>
+
+    <input
+      class="file-input"
+      id="restoreFile"
+      type="file"
+      accept=".json,application/json"
+      onchange="restoreData(event)">
+
+  </div>
+
+  <div class="card">
+
+    <div class="card-title">
+      <div class="card-title-left">
+        🏠 iPhone 使用
+      </div>
+    </div>
+
+    <div class="info-box">
+      如果你是使用 iPhone Safari，可以按「分享」→「加入主畫面」。
+      之後直接從 iPhone 主畫面開啟「健康紀錄」即可。
+    </div>
+
+    <button
+      class="primary"
+      onclick="showInstallHelp()">
+      📱 如何加入 iPhone 主畫面
+    </button>
+
+  </div>
+
+  <div id="historyList"></div>
+
+</section>
+
+
+<!-- ================= SETTINGS ================= -->
+
+<section id="pageSettings" class="page">
+
+  <div class="card">
+
+    <div class="card-title">
+      <div class="card-title-left">
+        💾 資料管理
+      </div>
+    </div>
+
+    <div class="info-box">
+      資料目前儲存在這台裝置的瀏覽器中。
+      建議定期使用「備份全部資料」保存一份備份檔案。
+    </div>
+
+    <button
+      class="primary"
+      onclick="backupData()">
+      💾 備份全部資料
+    </button>
+
+    <button
+      class="secondary"
+      onclick="document.getElementById('restoreFile').click()">
+      📥 還原資料
+    </button>
+
+    <button
+      class="secondary"
+      onclick="exportCSV()">
+      📤 匯出 CSV
+    </button>
+
+  </div>
+
+
+  <div class="card">
+
+    <div class="card-title">
+      <div class="card-title-left">
+        ⭐ 常用項目
+      </div>
+    </div>
+
+    <button
+      class="primary orange"
+      onclick="openFavoriteModal('food')">
+      🍚 管理常用進食
+    </button>
+
+    <button
+      class="primary cyan"
+      onclick="openFavoriteModal('liquid')">
+      🥤 管理常用液體
+    </button>
+
+  </div>
+
+
+  <div class="card">
+
+    <div class="card-title">
+      <div class="card-title-left">
+        📱 iPhone
+      </div>
+    </div>
+
+    <div class="info-box">
+      在 Safari 開啟本網站後，按「分享」→「加入主畫面」，
+      就可以像 App 一樣從 iPhone 主畫面開啟。
+    </div>
+
+    <button
+      class="primary"
+      onclick="showInstallHelp()">
+      查看操作說明
+    </button>
+
+  </div>
+
+</section>
+
+</main>
+
+
+<!-- ================= NAV ================= -->
+
+<nav class="bottom-nav">
+
+  <button
+    class="nav-btn active"
+    onclick="showPage('today',this)">
+    <span class="nav-icon">🏠</span>
+    今日
+  </button>
+
+  <button
+    class="nav-btn"
+    onclick="showPage('trend',this)">
+    <span class="nav-icon">📊</span>
+    趨勢
+  </button>
+
+  <button
+    class="nav-btn"
+    onclick="showPage('history',this)">
+    <span class="nav-icon">📅</span>
+    歷史
+  </button>
+
+  <button
+    class="nav-btn"
+    onclick="showPage('settings',this)">
+    <span class="nav-icon">⚙️</span>
+    設定
+  </button>
+
+</nav>
+
+</div>
+
+
+<!-- ================= BP MODAL ================= -->
+
+<div class="modal" id="bpModal">
+
+<div class="modal-box">
+
+<div class="modal-handle"></div>
+
+<div class="modal-header">
+<div class="modal-title">新增血壓</div>
+<button class="close" onclick="closeModal('bpModal')">✕</button>
+</div>
+
+<div class="form-group">
+<label>測量時間</label>
+<input type="time" id="bpTime">
+</div>
+
+<div class="form-group">
+<label>收縮壓 mmHg</label>
+<input type="number" inputmode="numeric" id="systolic" placeholder="例如 128">
+</div>
+
+<div class="form-group">
+<label>舒張壓 mmHg</label>
+<input type="number" inputmode="numeric" id="diastolic" placeholder="例如 76">
+</div>
+
+<div class="form-group">
+<label>心跳 次/分</label>
+<input type="number" inputmode="numeric" id="pulse" placeholder="例如 72">
+</div>
+
+<button class="primary" onclick="saveBP()">
+儲存血壓
+</button>
+
+</div>
+</div>
+
+
+<!-- ================= FOOD MODAL ================= -->
+
+<div class="modal" id="foodModal">
+
+<div class="modal-box">
+
+<div class="modal-handle"></div>
+
+<div class="modal-header">
+<div class="modal-title">新增進食</div>
+<button class="close" onclick="closeModal('foodModal')">✕</button>
+</div>
+
+<div class="form-group">
+<label>時間</label>
+<input type="time" id="foodTime">
+</div>
+
+<div class="form-group">
+<label>食物名稱</label>
+<input type="text" id="foodName" placeholder="例如：白飯">
+</div>
+
+<div class="form-group">
+<label>重量（克）</label>
+<input type="number" inputmode="decimal" step="0.1" id="foodWeight" placeholder="例如 150">
+</div>
+
+<button class="primary orange" onclick="saveFood()">
+儲存進食
+</button>
+
+</div>
+</div>
+
+
+<!-- ================= LIQUID MODAL ================= -->
+
+<div class="modal" id="liquidModal">
+
+<div class="modal-box">
+
+<div class="modal-handle"></div>
+
+<div class="modal-header">
+<div class="modal-title">新增液體</div>
+<button class="close" onclick="closeModal('liquidModal')">✕</button>
+</div>
+
+<div class="form-group">
+<label>時間</label>
+<input type="time" id="liquidTime">
+</div>
+
+<div class="form-group">
+<label>名稱</label>
+<input type="text" id="liquidName" placeholder="例如：水">
+</div>
+
+<div class="form-group">
+<label>容量（mL）</label>
+<input type="number" inputmode="numeric" id="liquidAmount" placeholder="例如 250">
+</div>
+
+<button class="primary cyan" onclick="saveLiquid()">
+儲存液體
+</button>
+
+</div>
+</div>
+
+
+<!-- ================= URINE MODAL ================= -->
+
+<div class="modal" id="urineModal">
+
+<div class="modal-box">
+
+<div class="modal-handle"></div>
+
+<div class="modal-header">
+<div class="modal-title">新增尿量</div>
+<button class="close" onclick="closeModal('urineModal')">✕</button>
+</div>
+
+<div class="form-group">
+<label>時間</label>
+<input type="time" id="urineTime">
+</div>
+
+<div class="form-group">
+<label>尿量（mL）</label>
+<input type="number" inputmode="numeric" id="urineAmount" placeholder="例如 250">
+</div>
+
+<button class="primary green" onclick="saveUrine()">
+儲存尿量
+</button>
+
+</div>
+</div>
+
+
+<!-- ================= FAVORITE MODAL ================= -->
+
+<div class="modal" id="favoriteModal">
+
+<div class="modal-box">
+
+<div class="modal-handle"></div>
+
+<div class="modal-header">
+<div class="modal-title" id="favoriteTitle">
+新增常用項目
+</div>
+
+<button class="close" onclick="closeModal('favoriteModal')">
+✕
+</button>
+</div>
+
+<div class="form-group">
+
+<label>名稱</label>
+
+<input
+type="text"
+id="favoriteName"
+placeholder="例如：白飯">
+
+</div>
+
+<div class="form-group">
+
+<label id="favoriteAmountLabel">
+重量（克）
+</label>
+
+<input
+type="number"
+inputmode="decimal"
+step="0.1"
+id="favoriteAmount"
+placeholder="例如 150">
+
+</div>
+
+<button
+class="primary"
+id="favoriteSaveButton"
+onclick="saveFavorite()">
+儲存常用項目
+</button>
+
+<hr style="border:0;border-top:1px solid #e5e7eb;margin:22px 0">
+
+<div id="favoriteManageList"></div>
+
+</div>
+</div>
+
+
+<!-- ================= INSTALL HELP ================= -->
+
+<div class="modal" id="installModal">
+
+<div class="modal-box">
+
+<div class="modal-handle"></div>
+
+<div class="modal-header">
+
+<div class="modal-title">
+加入 iPhone 主畫面
+</div>
+
+<button
+class="close"
+onclick="closeModal('installModal')">
+✕
+</button>
+
+</div>
+
+<div class="info-box">
+
+<b>在 iPhone Safari：</b><br><br>
+
+① 開啟這個健康紀錄網站<br>
+② 按 Safari 的「分享」按鈕<br>
+③ 選擇「加入主畫面」<br>
+④ 名稱輸入「健康紀錄」<br>
+⑤ 按「加入」<br><br>
+
+完成後，iPhone 主畫面就會出現健康紀錄圖示。
+
+</div>
+
+<button
+class="primary"
+onclick="closeModal('installModal')">
+知道了
+</button>
+
+</div>
+</div>
+
+
+<div class="toast" id="toast"></div>
+
+
+<script>
+
+const STORAGE_KEY = "iphone_health_record_v3";
+const FAVORITE_KEY = "health_record_favorites_v1";
+
+let data =
+  JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
+
+let favorites =
+  JSON.parse(localStorage.getItem(FAVORITE_KEY) || '{"food":[],"liquid":[]}');
+
+let selectedDate = todayString();
+let favoriteType = "food";
+
+
+/* ================= INIT ================= */
+
+document.addEventListener("DOMContentLoaded", () => {
+
+  document.getElementById("datePicker").value =
+    selectedDate;
+
+  updateHeader();
+  renderToday();
+
+});
+
+
+/* ================= DATE ================= */
+
+function todayString(){
+
+  const d = new Date();
+
+  return [
+    d.getFullYear(),
+    String(d.getMonth()+1).padStart(2,"0"),
+    String(d.getDate()).padStart(2,"0")
+  ].join("-");
+
+}
+
+
+function currentTime(){
+
+  const d = new Date();
+
+  return String(d.getHours()).padStart(2,"0")
+    + ":"
+    + String(d.getMinutes()).padStart(2,"0");
+
+}
+
+
+function changeDate(days){
+
+  const d =
+    new Date(selectedDate + "T00:00:00");
+
+  d.setDate(d.getDate()+days);
+
+  selectedDate =
+    [
+      d.getFullYear(),
+      String(d.getMonth()+1).padStart(2,"0"),
+      String(d.getDate()).padStart(2,"0")
+    ].join("-");
+
+  document.getElementById("datePicker").value =
+    selectedDate;
+
+  updateHeader();
+  renderToday();
+
+}
+
+
+function selectDate(value){
+
+  selectedDate = value;
+
+  updateHeader();
+  renderToday();
+
+}
+
+
+function updateHeader(){
+
+  const d =
+    new Date(selectedDate + "T00:00:00");
+
+  const week =
+    ["日","一","二","三","四","五","六"];
+
+  document.getElementById("headerDate").textContent =
+    `${d.getFullYear()}年${d.getMonth()+1}月${d.getDate()}日 星期${week[d.getDay()]}`;
+
+}
+
+
+/* ================= DATA ================= */
+
+function getDay(){
+
+  if(!data[selectedDate]){
+
+    data[selectedDate] = {
+      bp:[],
+      food:[],
+      liquid:[],
+      urine:[]
+    };
+
+  }
+
+  const day = data[selectedDate];
+
+  day.bp = Array.isArray(day.bp) ? day.bp : [];
+  day.food = Array.isArray(day.food) ? day.food : [];
+  day.liquid = Array.isArray(day.liquid) ? day.liquid : [];
+  day.urine = Array.isArray(day.urine) ? day.urine : [];
+
+  return day;
+
+}
+
+
+function save(){
+
+  localStorage.setItem(
+    STORAGE_KEY,
+    JSON.stringify(data)
+  );
+
+}
+
+
+/* ================= BLOOD PRESSURE ================= */
+
+function saveBP(){
+
+  const systolic =
+    Number(document.getElementById("systolic").value);
+
+  const diastolic =
+    Number(document.getElementById("diastolic").value);
+
+  const pulse =
+    Number(document.getElementById("pulse").value) || null;
+
+  if(!systolic || !diastolic){
+
+    alert("請輸入收縮壓與舒張壓");
+    return;
+
+  }
+
+  getDay().bp.push({
+    id:Date.now(),
+    time:
+      document.getElementById("bpTime").value ||
+      currentTime(),
+    systolic,
+    diastolic,
+    pulse
+  });
+
+  save();
+
+  closeModal("bpModal");
+
+  clearInputs([
+    "systolic",
+    "diastolic",
+    "pulse"
+  ]);
+
+  renderToday();
+
+  toast("血壓已記錄");
+
+}
+
+
+/* ================= FOOD ================= */
+
+function saveFood(){
+
+  const name =
+    document.getElementById("foodName").value.trim();
+
+  const weight =
+    Number(document.getElementById("foodWeight").value);
+
+  if(!name){
+
+    alert("請輸入食物名稱");
+    return;
+
+  }
+
+  if(!weight || weight <= 0){
+
+    alert("請輸入正確重量");
+    return;
+
+  }
+
+  addFoodRecord(
+    name,
+    weight,
+    document.getElementById("foodTime").value ||
+    currentTime()
+  );
+
+  closeModal("foodModal");
+
+  clearInputs([
+    "foodName",
+    "foodWeight"
+  ]);
+
+  renderToday();
+
+  toast(`${name} ${weight} g 已記錄`);
+
+}
+
+
+function addFoodRecord(name,weight,time){
+
+  getDay().food.push({
+    id:Date.now()+Math.random(),
+    time,
+    name,
+    weight
+  });
+
+  save();
+
+}
+
+
+/* ================= LIQUID ================= */
+
+function saveLiquid(){
+
+  const name =
+    document.getElementById("liquidName").value.trim();
+
+  const amount =
+    Number(document.getElementById("liquidAmount").value);
+
+  if(!name){
+
+    alert("請輸入液體名稱");
+    return;
+
+  }
+
+  if(!amount || amount <= 0){
+
+    alert("請輸入正確容量");
+    return;
+
+  }
+
+  addLiquidRecord(
+    name,
+    amount,
+    document.getElementById("liquidTime").value ||
+    currentTime()
+  );
+
+  closeModal("liquidModal");
+
+  clearInputs([
+    "liquidName",
+    "liquidAmount"
+  ]);
+
+  renderToday();
+
+  toast(`${name} ${amount} mL 已記錄`);
+
+}
+
+
+function addLiquidRecord(name,amount,time){
+
+  getDay().liquid.push({
+    id:Date.now()+Math.random(),
+    time,
+    name,
+    amount
+  });
+
+  save();
+
+}
+
+
+/* ================= URINE ================= */
+
+function addUrine(amount){
+
+  getDay().urine.push({
+    id:Date.now()+Math.random(),
+    time:currentTime(),
+    amount
+  });
+
+  save();
+  renderToday();
+
+  toast(`已增加 ${amount} mL`);
+
+}
+
+
+function saveUrine(){
+
+  const amount =
+    Number(document.getElementById("urineAmount").value);
+
+  if(!amount || amount <= 0){
+
+    alert("請輸入正確尿量");
+    return;
+
+  }
+
+  getDay().urine.push({
+    id:Date.now()+Math.random(),
+    time:
+      document.getElementById("urineTime").value ||
+      currentTime(),
+    amount
+  });
+
+  save();
+
+  closeModal("urineModal");
+
+  clearInputs(["urineAmount"]);
+
+  renderToday();
+
+  toast("尿量已記錄");
+
+}
+
+
+/* ================= FAVORITES ================= */
+
+function openFavoriteModal(type){
+
+  favoriteType = type;
+
+  document.getElementById("favoriteTitle").textContent =
+    type === "food"
+      ? "管理常用進食"
+      : "管理常用液體";
+
+  document.getElementById("favoriteAmountLabel").textContent =
+    type === "food"
+      ? "重量（克）"
+      : "容量（mL）";
+
+  document.getElementById("favoriteName").placeholder =
+    type === "food"
+      ? "例如：白飯"
+      : "例如：水";
+
+  document.getElementById("favoriteAmount").placeholder =
+    type === "food"
+      ? "例如 150"
+      : "例如 250";
+
+  renderFavoriteManageList();
+
+  openModal("favoriteModal");
+
+}
+
+
+function saveFavorite(){
+
+  const name =
+    document.getElementById("favoriteName").value.trim();
+
+  const amount =
+    Number(document.getElementById("favoriteAmount").value);
+
+  if(!name){
+
+    alert("請輸入名稱");
+    return;
+
+  }
+
+  if(!amount || amount <= 0){
+
+    alert("請輸入正確數值");
+    return;
+
+  }
+
+  favorites[favoriteType].push({
+    id:Date.now()+Math.random(),
+    name,
+    amount
+  });
+
+  localStorage.setItem(
+    FAVORITE_KEY,
+    JSON.stringify(favorites)
+  );
+
+  clearInputs([
+    "favoriteName",
+    "favoriteAmount"
+  ]);
+
+  renderFavoriteManageList();
+  renderFavorites();
+
+  toast("常用項目已新增");
+
+}
+
+
+function renderFavorites(){
+
+  renderFavoriteButtons(
+    "food",
+    "foodFavorites"
+  );
+
+  renderFavoriteButtons(
+    "liquid",
+    "liquidFavorites"
+  );
+
+}
+
+
+function renderFavoriteButtons(type,id){
+
+  const box =
+    document.getElementById(id);
+
+  const list =
+    favorites[type] || [];
+
+  if(!list.length){
+
+    box.innerHTML =
+      `<div class="empty" style="grid-column:1/-1">
+        尚未建立常用項目
+      </div>`;
+
+    return;
+
+  }
+
+  box.innerHTML =
+    list.map(x => `
+
+      <button
+        class="favorite-btn"
+        onclick="useFavorite('${type}',${x.id})">
+
+        ${safe(x.name)}
+
+        <small>
+          ${format(x.amount)}
+          ${type === "food" ? "g" : "mL"}
+        </small>
+
+        <span
+          class="favorite-delete"
+          onclick="event.stopPropagation();deleteFavorite('${type}',${x.id})">
+          ✕
+        </span>
+
+      </button>
+
+    `).join("");
+
+}
+
+
+function renderFavoriteManageList(){
+
+  const box =
+    document.getElementById(
+      "favoriteManageList"
+    );
+
+  const list =
+    favorites[favoriteType] || [];
+
+  if(!list.length){
+
+    box.innerHTML =
+      `<div class="empty">
+        尚未建立常用項目
+      </div>`;
+
+    return;
+
+  }
+
+  box.innerHTML =
+    list.map(x => `
+
+      <div class="record">
+
+        <div class="record-main">
+
+          <div
+            class="record-icon ${
+              favoriteType === "food"
+                ? "orange-bg"
+                : "cyan-bg"
+            }">
+
+            ${favoriteType === "food" ? "🍚" : "🥤"}
+
+          </div>
+
+          <div>
+
+            <div class="record-name">
+              ${safe(x.name)}
+            </div>
+
+            <div class="record-time">
+              ${format(x.amount)}
+              ${favoriteType === "food" ? " g" : " mL"}
+            </div>
+
+          </div>
+
+        </div>
+
+        <button
+          class="delete"
+          onclick="deleteFavorite('${favoriteType}',${x.id})">
+          🗑
+        </button>
+
+      </div>
+
+    `).join("");
+
+}
+
+
+function useFavorite(type,id){
+
+  const item =
+    favorites[type].find(
+      x => String(x.id) === String(id)
+    );
+
+  if(!item) return;
+
+  if(type === "food"){
+
+    addFoodRecord(
+      item.name,
+      item.amount,
+      currentTime()
+    );
+
+    toast(
+      `${item.name} ${item.amount} g 已記錄`
+    );
+
+  }else{
+
+    addLiquidRecord(
+      item.name,
+      item.amount,
+      currentTime()
+    );
+
+    toast(
+      `${item.name} ${item.amount} mL 已記錄`
+    );
+
+  }
+
+  renderToday();
+
+}
+
+
+function deleteFavorite(type,id){
+
+  favorites[type] =
+    favorites[type].filter(
+      x => String(x.id) !== String(id)
+    );
+
+  localStorage.setItem(
+    FAVORITE_KEY,
+    JSON.stringify(favorites)
+  );
+
+  renderFavoriteManageList();
+  renderFavorites();
+
+  toast("常用項目已刪除");
+
+}
+
+
+/* ================= RENDER TODAY ================= */
+
+function renderToday(){
+
+  const day = getDay();
+
+  const latest =
+    day.bp.length
+      ? day.bp[day.bp.length-1]
+      : null;
+
+  const foodTotal =
+    day.food.reduce(
+      (s,x)=>s+Number(x.weight),
+      0
+    );
+
+  const liquidTotal =
+    day.liquid.reduce(
+      (s,x)=>s+Number(x.amount),
+      0
+    );
+
+  const urineTotal =
+    day.urine.reduce(
+      (s,x)=>s+Number(x.amount),
+      0
+    );
+
+  document.getElementById("summaryBP").textContent =
+    latest
+      ? `${latest.systolic}/${latest.diastolic}`
+      : "--";
+
+  document.getElementById("summaryFood").textContent =
+    format(foodTotal);
+
+  document.getElementById("summaryLiquid").textContent =
+    format(liquidTotal);
+
+  document.getElementById("summaryUrine").textContent =
+    format(urineTotal);
+
+  document.getElementById("foodTotal").textContent =
+    format(foodTotal);
+
+  document.getElementById("liquidTotal").textContent =
+    format(liquidTotal);
+
+  document.getElementById("urineTotal").textContent =
+    format(urineTotal);
+
+  renderBP(day);
+  renderFood(day);
+  renderLiquid(day);
+  renderUrine(day);
+  renderFavorites();
+
+}
+
+
+/* ================= RENDER BP ================= */
+
+function renderBP(day){
+
+  const latestBox =
+    document.getElementById("bpLatest");
+
+  const records =
+    document.getElementById("bpRecords");
+
+  if(!day.bp.length){
+
+    latestBox.innerHTML =
+      `<div class="empty">
+        尚未記錄血壓
+      </div>`;
+
+    records.innerHTML = "";
+
+    return;
+
+  }
+
+  const latest =
+    day.bp[day.bp.length-1];
+
+  latestBox.innerHTML = `
+
+    <div class="bp-main">
+
+      <span class="bp-value">
+        ${latest.systolic}/${latest.diastolic}
+      </span>
+
+      <span class="bp-unit">
+        mmHg
+      </span>
+
+    </div>
+
+    <div class="bp-sub">
+      ${latest.time}
+      ${latest.pulse ? ` ・ 心跳 ${latest.pulse}` : ""}
+    </div>
+
+  `;
+
+  records.innerHTML =
+    day.bp.map(x => `
+
+      <div class="record">
+
+        <div class="record-main">
+
+          <div
+            class="record-icon"
+            style="background:#eff6ff">
+            🩸
+          </div>
+
+          <div>
+
+            <div class="record-name">
+              ${x.systolic}/${x.diastolic}
+            </div>
+
+            <div class="record-time">
+              ${x.time}
+              ${x.pulse ? ` ・ ${x.pulse} 次/分` : ""}
+            </div>
+
+          </div>
+
+        </div>
+
+        <button
+          class="delete"
+          onclick="deleteItem('bp',${x.id})">
+          🗑
+        </button>
+
+      </div>
+
+    `).join("");
+
+}
+
+
+/* ================= RENDER FOOD ================= */
+
+function renderFood(day){
+
+  const box =
+    document.getElementById("foodRecords");
+
+  if(!day.food.length){
+
+    box.innerHTML =
+      `<div class="empty">
+        尚未記錄進食
+      </div>`;
+
+    return;
+
+  }
+
+  box.innerHTML =
+    day.food.map(x => `
+
+      <div class="record">
+
+        <div class="record-main">
+
+          <div class="record-icon orange-bg">
+            🍚
+          </div>
+
+          <div>
+
+            <div class="record-name">
+              ${safe(x.name)}
+            </div>
+
+            <div class="record-time">
+              ${x.time}
+            </div>
+
+          </div>
+
+        </div>
+
+        <div style="display:flex;align-items:center">
+
+          <span class="record-value food-color">
+            ${format(x.weight)} g
+          </span>
+
+          <button
+            class="delete"
+            onclick="deleteItem('food',${x.id})">
+            🗑
+          </button>
+
+        </div>
+
+      </div>
+
+    `).join("");
+
+}
+
+
+/* ================= RENDER LIQUID ================= */
+
+function renderLiquid(day){
+
+  const box =
+    document.getElementById("liquidRecords");
+
+  if(!day.liquid.length){
+
+    box.innerHTML =
+      `<div class="empty">
+        尚未記錄液體攝入
+      </div>`;
+
+    return;
+
+  }
+
+  box.innerHTML =
+    day.liquid.map(x => `
+
+      <div class="record">
+
+        <div class="record-main">
+
+          <div class="record-icon cyan-bg">
+            🥤
+          </div>
+
+          <div>
+
+            <div class="record-name">
+              ${safe(x.name)}
+            </div>
+
+            <div class="record-time">
+              ${x.time}
+            </div>
+
+          </div>
+
+        </div>
+
+        <div style="display:flex;align-items:center">
+
+          <span class="record-value liquid-color">
+            ${format(x.amount)} mL
+          </span>
+
+          <button
+            class="delete"
+            onclick="deleteItem('liquid',${x.id})">
+            🗑
+          </button>
+
+        </div>
+
+      </div>
+
+    `).join("");
+
+}
+
+
+/* ================= RENDER URINE ================= */
+
+function renderUrine(day){
+
+  const box =
+    document.getElementById("urineRecords");
+
+  if(!day.urine.length){
+
+    box.innerHTML =
+      `<div class="empty">
+        尚未記錄尿量
+      </div>`;
+
+    return;
+
+  }
+
+  box.innerHTML =
+    day.urine.map(x => `
+
+      <div class="record">
+
+        <div class="record-main">
+
+          <div class="record-icon green-bg">
+            💧
+          </div>
+
+          <div>
+
+            <div class="record-name">
+              尿量
+            </div>
+
+            <div class="record-time">
+              ${x.time}
+            </div>
+
+          </div>
+
+        </div>
+
+        <div style="display:flex;align-items:center">
+
+          <span class="record-value urine-color">
+            ${format(x.amount)} mL
+          </span>
+
+          <button
+            class="delete"
+            onclick="deleteItem('urine',${x.id})">
+            🗑
+          </button>
+
+        </div>
+
+      </div>
+
+    `).join("");
+
+}
+
+
+/* ================= DELETE ================= */
+
+function deleteItem(type,id){
+
+  const day = getDay();
+
+  day[type] =
+    day[type].filter(
+      x => String(x.id) !== String(id)
+    );
+
+  save();
+
+  renderToday();
+
+  toast("紀錄已刪除");
+
+}
+
+
+/* ================= NAVIGATION ================= */
+
+function showPage(page,button){
+
+  document
+    .querySelectorAll(".page")
+    .forEach(x=>x.classList.remove("active"));
+
+  document
+    .querySelectorAll(".nav-btn")
+    .forEach(x=>x.classList.remove("active"));
+
+  document
+    .getElementById("page"+capitalize(page))
+    .classList.add("active");
+
+  button.classList.add("active");
+
+  if(page === "trend")
+    renderTrend();
+
+  if(page === "history")
+    renderHistory();
+
+  window.scrollTo({
+    top:0,
+    behavior:"smooth"
+  });
+
+}
+
+
+function capitalize(s){
+
+  return s.charAt(0).toUpperCase()+s.slice(1);
+
+}
+
+
+/* ================= MODALS ================= */
+
+function openModal(id){
+
+  document
+    .getElementById(id)
+    .classList.add("show");
+
+  document.body.style.overflow = "hidden";
+
+  const times = {
+    bpModal:"bpTime",
+    foodModal:"foodTime",
+    liquidModal:"liquidTime",
+    urineModal:"urineTime"
+  };
+
+  if(times[id]){
+
+    document.getElementById(times[id]).value =
+      currentTime();
+
+  }
+
+}
+
+
+function closeModal(id){
+
+  document
+    .getElementById(id)
+    .classList.remove("show");
+
+  document.body.style.overflow = "";
+
+}
+
+
+document
+  .querySelectorAll(".modal")
+  .forEach(modal => {
+
+    modal.addEventListener("click",e=>{
+
+      if(e.target === modal)
+        closeModal(modal.id);
+
+    });
+
+  });
+
+
+/* ================= TREND ================= */
+
+function last7(){
+
+  const result = [];
+
+  const d =
+    new Date(selectedDate+"T00:00:00");
+
+  for(let i=6;i>=0;i--){
+
+    const x = new Date(d);
+
+    x.setDate(d.getDate()-i);
+
+    result.push(
+      [
+        x.getFullYear(),
+        String(x.getMonth()+1).padStart(2,"0"),
+        String(x.getDate()).padStart(2,"0")
+      ].join("-")
+    );
+
+  }
+
+  return result;
+
+}
+
+
+function renderTrend(){
+
+  const dates = last7();
+
+  const urine =
+    dates.map(
+      date=>totalOf(
+        data[date]?.urine,
+        "amount"
+      )
+    );
+
+  const liquid =
+    dates.map(
+      date=>totalOf(
+        data[date]?.liquid,
+        "amount"
+      )
+    );
+
+  drawChart(
+    "urineChart",
+    dates,
+    urine,
+    "bar-blue"
+  );
+
+  drawChart(
+    "liquidChart",
+    dates,
+    liquid,
+    "bar-cyan"
+  );
+
+  document.getElementById("foodTrend").innerHTML =
+    dates.map(date => `
+
+      <div class="record">
+
+        <strong>${date.slice(5)}</strong>
+
+        <span>
+          ${format(
+            totalOf(
+              data[date]?.food,
+              "weight"
+            )
+          )} g
+        </span>
+
+      </div>
+
+    `).join("");
+
+  document.getElementById("bpTrend").innerHTML =
+    dates.map(date => {
+
+      const arr =
+        data[date]?.bp || [];
+
+      const latest =
+        arr.length
+          ? arr[arr.length-1]
+          : null;
+
+      return `
+
+        <div class="record">
+
+          <strong>${date.slice(5)}</strong>
+
+          <span>
+            ${
+              latest
+                ? `${latest.systolic}/${latest.diastolic}`
+                : "未記錄"
+            }
+          </span>
+
+        </div>
+
+      `;
+
+    }).join("");
+
+}
+
+
+function drawChart(id,dates,values,color){
+
+  const box =
+    document.getElementById(id);
+
+  const max =
+    Math.max(...values,100);
+
+  if(!values.some(v=>v>0)){
+
+    box.innerHTML =
+      `<div class="chart-empty">
+        最近 7 天尚無資料
+      </div>`;
+
+    return;
+
+  }
+
+  box.innerHTML =
+    dates.map((date,i)=>{
+
+      const value = values[i];
+
+      const height =
+        value
+          ? Math.max(4,value/max*100)
+          : 0;
+
+      return `
+
+        <div class="bar-wrap">
+
+          ${
+            value
+              ? `
+                <span
+                  class="bar-value"
+                  style="--height:${height}%">
+                  ${value}
+                </span>
+              `
+              : ""
+          }
+
+          <div
+            class="bar ${color}"
+            style="height:${height}%">
+          </div>
+
+          <span class="bar-label">
+            ${date.slice(5)}
+          </span>
+
+        </div>
+
+      `;
+
+    }).join("");
+
+}
+
+
+/* ================= HISTORY ================= */
+
+function renderHistory(){
+
+  const box =
+    document.getElementById("historyList");
+
+  const dates =
+    Object.keys(data)
+      .sort()
+      .reverse();
+
+  if(!dates.length){
+
+    box.innerHTML =
+      `<div class="card">
+        <div class="empty">
+          尚無歷史資料
+        </div>
+      </div>`;
+
+    return;
+
+  }
+
+  box.innerHTML =
+    dates.map(date=>{
+
+      const day = data[date];
+
+      const food =
+        totalOf(day.food,"weight");
+
+      const liquid =
+        totalOf(day.liquid,"amount");
+
+      const urine =
+        totalOf(day.urine,"amount");
+
+      const latest =
+        day.bp.length
+          ? day.bp[day.bp.length-1]
+          : null;
+
+      return `
+
+        <div class="card">
+
+          <div
+            style="
+              font-weight:900;
+              margin-bottom:10px">
+            ${date}
+          </div>
+
+          <div class="summary-grid">
+
+            <div class="summary-item">
+              <div class="summary-number">
+                ${
+                  latest
+                    ? `${latest.systolic}/${latest.diastolic}`
+                    : "--"
+                }
+              </div>
+              <div class="summary-label">血壓</div>
+            </div>
+
+            <div class="summary-item">
+              <div class="summary-number">
+                ${format(food)}
+              </div>
+              <div class="summary-label">進食 g</div>
+            </div>
+
+            <div class="summary-item">
+              <div class="summary-number">
+                ${format(liquid)}
+              </div>
+              <div class="summary-label">液體 mL</div>
+            </div>
+
+            <div class="summary-item">
+              <div class="summary-number">
+                ${format(urine)}
+              </div>
+              <div class="summary-label">尿量 mL</div>
+            </div>
+
+          </div>
+
+        </div>
+
+      `;
+
+    }).join("");
+
+}
+
+
+/* ================= BACKUP ================= */
+
+function backupData(){
+
+  const backup = {
+
+    version:3,
+
+    exportedAt:
+      new Date().toISOString(),
+
+    records:data,
+
+    favorites:favorites
+
+  };
+
+  const blob =
+    new Blob(
+      [JSON.stringify(backup,null,2)],
+      {type:"application/json"}
+    );
+
+  const url =
+    URL.createObjectURL(blob);
+
+  const a =
+    document.createElement("a");
+
+  a.href = url;
+
+  a.download =
+    `健康紀錄備份_${todayString()}.json`;
+
+  document.body.appendChild(a);
+
+  a.click();
+
+  a.remove();
+
+  setTimeout(
+    ()=>URL.revokeObjectURL(url),
+    1000
+  );
+
+  toast("資料備份已建立");
+
+}
+
+
+/* ================= RESTORE ================= */
+
+function restoreData(event){
+
+  const file =
+    event.target.files[0];
+
+  if(!file)
+    return;
+
+  const reader =
+    new FileReader();
+
+  reader.onload = function(){
+
+    try{
+
+      const backup =
+        JSON.parse(reader.result);
+
+      if(
+        !backup ||
+        !backup.records
+      ){
+
+        throw new Error(
+          "格式錯誤"
+        );
+
+      }
+
+      if(
+        !confirm(
+          "還原資料會取代目前裝置上的紀錄。確定要繼續嗎？"
+        )
+      ){
+
+        event.target.value="";
+        return;
+
+      }
+
+      data =
+        backup.records || {};
+
+      favorites =
+        backup.favorites || {
+          food:[],
+          liquid:[]
+        };
+
+      localStorage.setItem(
+        STORAGE_KEY,
+        JSON.stringify(data)
+      );
+
+      localStorage.setItem(
+        FAVORITE_KEY,
+        JSON.stringify(favorites)
+      );
+
+      renderToday();
+
+      toast("資料還原完成");
+
+    }catch(error){
+
+      alert(
+        "無法讀取備份檔案，請確認檔案是本 App 匯出的 JSON 備份。"
+      );
+
+    }
+
+    event.target.value="";
+
+  };
+
+  reader.readAsText(file);
+
+}
+
+
+/* ================= CSV ================= */
+
+function exportCSV(){
+
+  const rows = [[
+    "日期",
+    "類型",
+    "時間",
+    "名稱",
+    "重量(g)",
+    "收縮壓",
+    "舒張壓",
+    "心跳",
+    "容量(mL)"
+  ]];
+
+  Object.keys(data)
+    .sort()
+    .forEach(date=>{
+
+      const day = data[date];
+
+      day.food.forEach(x=>{
+        rows.push([
+          date,
+          "進食",
+          x.time,
+          x.name,
+          x.weight,
+          "",
+          "",
+          "",
+          ""
+        ]);
+      });
+
+      day.liquid.forEach(x=>{
+        rows.push([
+          date,
+          "液體攝入",
+          x.time,
+          x.name,
+          "",
+          "",
+          "",
+          "",
+          x.amount
+        ]);
+      });
+
+      day.bp.forEach(x=>{
+        rows.push([
+          date,
+          "血壓",
+          x.time,
+          "",
+          "",
+          x.systolic,
+          x.diastolic,
+          x.pulse || "",
+          ""
+        ]);
+      });
+
+      day.urine.forEach(x=>{
+        rows.push([
+          date,
+          "尿量",
+          x.time,
+          "",
+          "",
+          "",
+          "",
+          "",
+          x.amount
+        ]);
+      });
+
+    });
+
+  const csv =
+    "\uFEFF" +
+    rows.map(row=>
+      row.map(value=>
+        `"${String(value).replace(/"/g,'""')}"`
+      ).join(",")
+    ).join("\n");
+
+  const blob =
+    new Blob(
+      [csv],
+      {type:"text/csv;charset=utf-8"}
+    );
+
+  const url =
+    URL.createObjectURL(blob);
+
+  const a =
+    document.createElement("a");
+
+  a.href=url;
+
+  a.download =
+    `健康紀錄_${todayString()}.csv`;
+
+  document.body.appendChild(a);
+
+  a.click();
+
+  a.remove();
+
+  setTimeout(
+    ()=>URL.revokeObjectURL(url),
+    1000
+  );
+
+  toast("CSV 已匯出");
+
+}
+
+
+/* ================= INSTALL HELP ================= */
+
+function showInstallHelp(){
+
+  openModal("installModal");
+
+}
+
+
+/* ================= UTILITIES ================= */
+
+function totalOf(arr,field){
+
+  if(!Array.isArray(arr))
+    return 0;
+
+  return arr.reduce(
+    (sum,x)=>
+      sum + Number(x[field] || 0),
+    0
+  );
+
+}
+
+
+function format(n){
+
+  const x=Number(n)||0;
+
+  return Number.isInteger(x)
+    ? String(x)
+    : x.toFixed(1);
+
+}
+
+
+function clearInputs(ids){
+
+  ids.forEach(id=>{
+
+    const el =
+      document.getElementById(id);
+
+    if(el)
+      el.value="";
+
+  });
+
+}
+
+
+function safe(text){
+
+  return String(text)
+    .replace(/&/g,"&amp;")
+    .replace(/</g,"&lt;")
+    .replace(/>/g,"&gt;")
+    .replace(/"/g,"&quot;")
+    .replace(/'/g,"&#039;");
+
+}
+
+
+function toast(message){
+
+  const el =
+    document.getElementById("toast");
+
+  el.textContent=message;
+
+  el.classList.add("show");
+
+  clearTimeout(window.toastTimer);
+
+  window.toastTimer =
+    setTimeout(
+      ()=>{
+        el.classList.remove("show");
+      },
+      1800
+    );
+
+}
+
+
+/* ================= SERVICE WORKER ================= */
+
+if("serviceWorker" in navigator){
+
+  window.addEventListener(
+    "load",
+    ()=>{
+      navigator.serviceWorker.register(
+        "./service-worker.js"
+      ).catch(
+        error =>
+          console.log(
+            "Service Worker:",
+            error
+          )
+      );
+    }
+  );
+
+}
+
+</script>
+
+</body>
+</html>
