@@ -51,6 +51,7 @@ body{
   padding:0;
   width:100%;
   max-width:100%;
+  min-width:0;
   overflow-x:hidden;
   background:var(--bg);
   color:var(--text);
@@ -63,19 +64,68 @@ body{
     sans-serif;
 }
 
-body{
-  min-height:100svh;
-  overscroll-behavior:none;
+/*
+  電腦版：
+  不再限制 body 的垂直捲動，
+  讓滑鼠滾輪可以正常捲動整個頁面。
+*/
+html{
+  min-height:100%;
+  overflow-x:hidden;
+  overflow-y:auto;
 }
 
+body{
+  min-height:100svh;
+  overscroll-behavior-x:none;
+  overscroll-behavior-y:auto;
+  overflow-y:auto;
+}
+
+/*
+  所有表單控制項允許縮小，
+  避免 Safari / iPhone 原生控制項撐破父容器。
+*/
 button,
 input{
   font:inherit;
+  min-width:0;
+  max-width:100%;
 }
 
 button{
   -webkit-appearance:none;
   appearance:none;
+}
+
+input{
+  box-sizing:border-box;
+}
+
+/*
+  iPhone Safari 的 time input 有時會使用原生
+  intrinsic width，因此強制限制在父容器內。
+*/
+input[type="time"]{
+  width:100%;
+  max-width:100%;
+  min-width:0;
+  height:53px;
+  box-sizing:border-box;
+  -webkit-appearance:none;
+  appearance:none;
+}
+
+/*
+  number / text 同樣明確限制寬度。
+*/
+input[type="number"],
+input[type="text"],
+input[type="date"]{
+  width:100%;
+  max-width:100%;
+  min-width:0;
+  box-sizing:border-box;
 }
 
 .app{
@@ -84,6 +134,16 @@ button{
   min-height:100svh;
   margin:auto;
   overflow-x:hidden;
+}
+
+/*
+  桌面版讓 app 本身不固定高度，
+  頁面內容自然延伸，由 body 提供滑鼠垂直捲動。
+*/
+@media(min-width:681px){
+  .app{
+    min-height:auto;
+  }
 }
 
 .header{
@@ -104,6 +164,7 @@ button{
   display:flex;
   align-items:center;
   justify-content:space-between;
+  min-width:0;
 }
 
 .app-title{
@@ -120,6 +181,7 @@ button{
 .logo{
   width:43px;
   height:43px;
+  flex:0 0 43px;
   display:flex;
   align-items:center;
   justify-content:center;
@@ -130,6 +192,7 @@ button{
 
 main{
   width:100%;
+  min-width:0;
   padding:
     14px
     14px
@@ -138,6 +201,8 @@ main{
 
 .page{
   display:none;
+  width:100%;
+  min-width:0;
 }
 
 .page.active{
@@ -148,6 +213,7 @@ main{
   display:flex;
   gap:8px;
   margin-bottom:14px;
+  min-width:0;
 }
 
 .date-arrow{
@@ -164,8 +230,9 @@ main{
 }
 
 .date-input{
-  flex:1;
+  flex:1 1 auto;
   min-width:0;
+  width:100%;
   height:44px;
   border:1px solid var(--line);
   border-radius:14px;
@@ -177,6 +244,7 @@ main{
 
 .card{
   width:100%;
+  min-width:0;
   background:#fff;
   border-radius:20px;
   padding:17px;
@@ -191,22 +259,27 @@ main{
   justify-content:space-between;
   gap:10px;
   margin-bottom:14px;
+  min-width:0;
 }
 
 .card-title-left{
   display:flex;
   align-items:center;
   gap:8px;
+  min-width:0;
   font-size:18px;
   font-weight:850;
 }
 
 .icon{
   font-size:23px;
+  flex:0 0 auto;
 }
 
 .add-btn{
   min-height:40px;
+  min-width:0;
+  flex:0 0 auto;
   border:0;
   border-radius:12px;
   padding:8px 12px;
@@ -322,10 +395,12 @@ main{
   gap:8px;
   padding:11px 0;
   border-top:1px solid var(--line);
+  min-width:0;
 }
 
 .record-main{
   min-width:0;
+  flex:1 1 auto;
   display:flex;
   align-items:center;
   gap:10px;
@@ -411,6 +486,7 @@ main{
 .favorite-btn{
   position:relative;
   min-height:64px;
+  min-width:0;
   border:0;
   border-radius:16px;
   padding:10px 35px 10px 12px;
@@ -496,8 +572,10 @@ main{
 .modal-box{
   width:100%;
   max-width:680px;
+  min-width:0;
   max-height:92svh;
   overflow-y:auto;
+  overflow-x:hidden;
   -webkit-overflow-scrolling:touch;
   background:#fff;
   border-radius:26px 26px 0 0;
@@ -518,10 +596,13 @@ main{
   display:flex;
   align-items:center;
   justify-content:space-between;
+  gap:10px;
   margin-bottom:18px;
+  min-width:0;
 }
 
 .modal-title{
+  min-width:0;
   font-size:22px;
   font-weight:900;
 }
@@ -529,12 +610,15 @@ main{
 .close{
   width:40px;
   height:40px;
+  flex:0 0 40px;
   border:0;
   border-radius:50%;
   background:#f1f5f9;
 }
 
 .form-group{
+  width:100%;
+  min-width:0;
   margin-bottom:15px;
 }
 
@@ -546,7 +630,10 @@ main{
 }
 
 .form-group input{
+  display:block;
   width:100%;
+  max-width:100%;
+  min-width:0;
   height:53px;
   border:1px solid #dbe2ea;
   border-radius:14px;
@@ -555,11 +642,42 @@ main{
   font-size:18px;
   color:var(--text);
   outline:none;
+  box-sizing:border-box;
 }
 
 .form-group input:focus{
   border-color:#93c5fd;
   background:#fff;
+}
+
+/*
+  特別處理時間輸入框。
+  Safari / iOS 有時會對 time input 加上自己的最小寬度，
+  所以這裡再次明確限制。
+*/
+.form-group input[type="time"]{
+  width:100%;
+  max-width:100%;
+  min-width:0;
+  padding-left:14px;
+  padding-right:14px;
+  box-sizing:border-box;
+  -webkit-appearance:none;
+  appearance:none;
+}
+
+/*
+  iPhone 較窄畫面時，縮小時間欄位的字體與左右內距，
+  避免原生控制項超出 modal。
+*/
+@media(max-width:480px){
+
+  .form-group input[type="time"]{
+    font-size:17px;
+    padding-left:12px;
+    padding-right:8px;
+  }
+
 }
 
 .primary{
@@ -711,21 +829,6 @@ main{
 /* =========================================================
    BLOOD PRESSURE TREND
 ========================================================= */
-
-/*
-  重要：
-  bp-chart 本身永遠不會撐破卡片／手機寬度。
-  是否可以水平滾動，由 .bp-chart-scroll 決定。
-
-  當日：
-  .bp-chart-scroll.no-scroll
-  → overflow-x:hidden
-  → 圖表寬度等於可視寬度
-
-  多日資料很多：
-  .bp-chart-scroll.can-scroll
-  → overflow-x:auto
-*/
 
 .bp-chart{
   position:relative;
@@ -1086,6 +1189,7 @@ main{
   gap:10px;
   padding:11px 0;
   border-bottom:1px solid var(--line);
+  min-width:0;
 }
 
 .today-record:last-child{
@@ -1173,6 +1277,30 @@ main{
     max-width:100%;
   }
 
+  /*
+    確保 modal 內所有欄位都不會超出手機寬度。
+  */
+  .modal-box{
+    width:100%;
+    max-width:100%;
+    padding-left:16px;
+    padding-right:16px;
+  }
+
+  .form-group{
+    width:100%;
+    max-width:100%;
+  }
+
+  .form-group input,
+  .form-group input[type="time"],
+  .form-group input[type="number"],
+  .form-group input[type="text"]{
+    width:100%;
+    max-width:100%;
+    min-width:0;
+  }
+
 }
 
 @media(max-width:480px){
@@ -1221,6 +1349,66 @@ main{
     grid-column:2;
     justify-self:start;
     margin-top:-4px;
+  }
+
+}
+
+
+/*
+  =========================================================
+  DESKTOP MOUSE SCROLL
+  =========================================================
+
+  桌面版不讓 .app 成為固定高度容器，
+  body 自然延伸，滑鼠滾輪可以捲動。
+*/
+@media(min-width:681px){
+
+  html,
+  body{
+    overflow-x:hidden;
+    overflow-y:auto;
+  }
+
+  body{
+    min-height:100vh;
+  }
+
+  .app{
+    min-height:auto;
+    height:auto;
+    overflow-x:hidden;
+    overflow-y:visible;
+  }
+
+  main{
+    min-height:auto;
+  }
+
+}
+
+
+/*
+  =========================================================
+  SMALL SCREEN TIME INPUT SAFETY
+  =========================================================
+
+  部分 iOS Safari 版本對 input[type=time] 有較大的
+  原生 intrinsic width。以下規則進一步確保它永遠
+  不會超過 modal。
+*/
+@supports (-webkit-touch-callout:none){
+
+  input[type="time"]{
+    width:100% !important;
+    max-width:100% !important;
+    min-width:0 !important;
+    box-sizing:border-box !important;
+  }
+
+  .form-group input[type="time"]{
+    display:block;
+    flex:1 1 auto;
   }
 
 }
@@ -1290,8 +1478,6 @@ main{
 
   </div>
 
-
-  <!-- SUMMARY -->
 
   <div class="card">
 
@@ -1378,8 +1564,6 @@ main{
   </div>
 
 
-  <!-- BLOOD PRESSURE -->
-
   <div class="card">
 
     <div class="card-title">
@@ -1411,8 +1595,6 @@ main{
   </div>
 
 
-  <!-- FAVORITE FOOD -->
-
   <div class="card">
 
     <div class="card-title">
@@ -1439,8 +1621,6 @@ main{
 
   </div>
 
-
-  <!-- FOOD -->
 
   <div class="card">
 
@@ -1487,8 +1667,6 @@ main{
   </div>
 
 
-  <!-- FAVORITE LIQUID -->
-
   <div class="card">
 
     <div class="card-title">
@@ -1515,8 +1693,6 @@ main{
 
   </div>
 
-
-  <!-- LIQUID -->
 
   <div class="card">
 
@@ -1562,8 +1738,6 @@ main{
 
   </div>
 
-
-  <!-- URINE -->
 
   <div class="card">
 
@@ -1689,8 +1863,6 @@ main{
   </div>
 
 
-  <!-- URINE -->
-
   <div class="card">
 
     <div class="card-title">
@@ -1712,8 +1884,6 @@ main{
 
   </div>
 
-
-  <!-- LIQUID -->
 
   <div class="card">
 
@@ -1737,8 +1907,6 @@ main{
   </div>
 
 
-  <!-- FOOD -->
-
   <div class="card">
 
     <div class="card-title">
@@ -1760,8 +1928,6 @@ main{
 
   </div>
 
-
-  <!-- BLOOD PRESSURE -->
 
   <div class="card">
 
@@ -1830,8 +1996,6 @@ main{
 
     </div>
 
-
-    <!-- DETAIL BP RECORDS -->
 
     <div
       class="bp-detail-section"
@@ -4539,6 +4703,10 @@ function showPage(
     renderHistory();
 
 
+  /*
+    desktop / mobile 都回到頁面頂端，
+    但不會再禁止 body 的滑鼠滾動。
+  */
   window.scrollTo({
 
     top:0,
@@ -4591,12 +4759,18 @@ function openModal(id){
 
   if(times[id]){
 
-    document
-      .getElementById(
+    const timeInput =
+      document.getElementById(
         times[id]
-      )
-      .value =
+      );
+
+
+    if(timeInput){
+
+      timeInput.value =
         currentTime();
+
+    }
 
   }
 
@@ -4611,6 +4785,9 @@ function closeModal(id){
     .remove("show");
 
 
+  /*
+    關閉 modal 後恢復頁面正常垂直捲動。
+  */
   document.body.style.overflow =
     "";
 
@@ -5344,10 +5521,6 @@ function renderBPTrend(
     );
 
 
-  /*
-    收集指定日期內所有血壓測量
-  */
-
   const records = [];
 
 
@@ -5397,10 +5570,6 @@ function renderBPTrend(
   );
 
 
-  /*
-    日期＋時間排序
-  */
-
   records.sort(
     (a,b) => {
 
@@ -5418,18 +5587,10 @@ function renderBPTrend(
   );
 
 
-  /*
-    先建立詳細紀錄。
-  */
-
   renderBPDetailList(
     records
   );
 
-
-  /*
-    沒有資料
-  */
 
   if(!records.length){
 
@@ -5456,33 +5617,20 @@ function renderBPTrend(
   }
 
 
-  /*
-    ========================================================
-    核心修改：
-    當日模式一定使用可視寬度。
-    多日模式才依資料量決定是否需要水平滾動。
-    ========================================================
-  */
-
   const isDaily =
     trendMode === "daily";
 
 
   /*
-    外層可視寬度。
-    使用 card 內實際寬度，避免圖表撐破手機。
+    使用實際圖表容器寬度，
+    避免桌面或手機圖表超出 card。
   */
-
   const containerWidth =
     Math.max(
       260,
       box.clientWidth
     );
 
-
-  /*
-    Y 軸＋左右內距。
-  */
 
   const yAxisWidth =
     40;
@@ -5499,16 +5647,6 @@ function renderBPTrend(
       rightPadding
     );
 
-
-  /*
-    當日：
-    不管有幾筆，都塞進目前手機寬度。
-
-    多日：
-    少量資料使用滿版。
-    超過 6 筆後，才逐漸增加圖表寬度，
-    讓使用者可以左右滑動。
-  */
 
   let plotWidth;
 
@@ -5538,11 +5676,6 @@ function renderBPTrend(
       );
 
 
-    /*
-      7 天內少量資料不滑動。
-      資料過多才增加寬度。
-    */
-
     plotWidth =
       records.length <= 6
         ? weeklyBaseWidth
@@ -5550,10 +5683,6 @@ function renderBPTrend(
 
   }
 
-
-  /*
-    多日資料超過 6 筆才啟用水平滾動。
-  */
 
   const shouldScroll =
     !isDaily &&
@@ -5565,12 +5694,6 @@ function renderBPTrend(
     shouldScroll
   );
 
-
-  /*
-    ========================================================
-    Y 軸範圍
-    ========================================================
-  */
 
   const allValues =
     records
@@ -5635,12 +5758,6 @@ function renderBPTrend(
   }
 
 
-  /*
-    ========================================================
-    圖表高度
-    ========================================================
-  */
-
   const chartHeight =
     275;
 
@@ -5678,12 +5795,6 @@ function renderBPTrend(
   }
 
 
-  /*
-    ========================================================
-    Y 軸刻度
-    ========================================================
-  */
-
   const tickCount =
     5;
 
@@ -5718,19 +5829,6 @@ function renderBPTrend(
 
   }
 
-
-  /*
-    ========================================================
-    X 軸位置
-    ========================================================
-
-    當日：
-    所有點平均分配在手機可視寬度。
-
-    多日：
-    少量資料平均分布；
-    大量資料使用固定點距離。
-  */
 
   const xPositions =
     records.map(
@@ -5783,11 +5881,6 @@ function renderBPTrend(
         }
 
 
-        /*
-          多日大量資料：
-          使用固定距離。
-        */
-
         const side =
           20;
 
@@ -5815,12 +5908,6 @@ function renderBPTrend(
       }
     );
 
-
-  /*
-    ========================================================
-    收縮壓 / 舒張壓 path
-    ========================================================
-  */
 
   const systolicPoints =
     records.map(
@@ -5886,12 +5973,6 @@ function renderBPTrend(
     );
 
 
-  /*
-    ========================================================
-    X 軸日期＋時間
-    ========================================================
-  */
-
   function formatBPXAxis(
     date,
     time
@@ -5905,15 +5986,6 @@ function renderBPTrend(
           "/"
         );
 
-
-    /*
-      當日：
-      第一行時間，第二行日期＋時間。
-      讓 X 軸主要視覺上以「量測時間」為主。
-
-      多日：
-      顯示日期＋時間。
-    */
 
     if(isDaily){
 
@@ -5954,12 +6026,6 @@ function renderBPTrend(
   }
 
 
-  /*
-    ========================================================
-    Y 軸
-    ========================================================
-  */
-
   const yAxisHTML =
     ticks
       .map(
@@ -5987,12 +6053,6 @@ function renderBPTrend(
       .join("");
 
 
-  /*
-    ========================================================
-    水平格線
-    ========================================================
-  */
-
   const gridHTML =
     ticks
       .map(
@@ -6017,12 +6077,6 @@ function renderBPTrend(
       .join("");
 
 
-  /*
-    ========================================================
-    X 軸日期＋時間標籤
-    ========================================================
-  */
-
   const xLabelsHTML =
     records
       .map(
@@ -6031,11 +6085,6 @@ function renderBPTrend(
           const x =
             xPositions[i];
 
-
-          /*
-            當日資料較多時縮小字體，
-            仍然保持在圖表範圍內。
-          */
 
           const labelWidth =
             isDaily
@@ -6071,12 +6120,6 @@ function renderBPTrend(
       )
       .join("");
 
-
-  /*
-    ========================================================
-    收縮壓數值標籤
-    ========================================================
-  */
 
   const systolicLabels =
     systolicPoints
@@ -6119,12 +6162,6 @@ function renderBPTrend(
       )
       .join("");
 
-
-  /*
-    ========================================================
-    舒張壓數值標籤
-    ========================================================
-  */
 
   const diastolicLabels =
     diastolicPoints
@@ -6184,12 +6221,6 @@ function renderBPTrend(
       .join("");
 
 
-  /*
-    ========================================================
-    收縮壓測量點
-    ========================================================
-  */
-
   const systolicDots =
     systolicPoints
       .map(
@@ -6241,12 +6272,6 @@ function renderBPTrend(
       .join("");
 
 
-  /*
-    ========================================================
-    舒張壓測量點
-    ========================================================
-  */
-
   const diastolicDots =
     diastolicPoints
       .map(
@@ -6297,12 +6322,6 @@ function renderBPTrend(
       )
       .join("");
 
-
-  /*
-    ========================================================
-    完整圖表
-    ========================================================
-  */
 
   const innerWidth =
     plotWidth +
@@ -6378,12 +6397,6 @@ function renderBPTrend(
 
   `;
 
-
-  /*
-    ========================================================
-    確保當日模式不出現水平捲軸。
-    ========================================================
-  */
 
   if(isDaily){
 
