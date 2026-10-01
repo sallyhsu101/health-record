@@ -1,0 +1,19 @@
+{
+  "name": "每日健康紀錄",
+  "short_name": "健康紀錄",
+  "description": "血壓、進食量、液體攝入與尿量紀錄",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f5f7fb",
+  "theme_color": "#2563eb",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
